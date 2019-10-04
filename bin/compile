@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+BUILD_DIR="$1"
+CACHE_DIR=$2
+ENV_DIR="$3"
+DIST_DIR="$BUILD_DIR/.heroku/lxml"
+LIB_DIR="/app/.heroku/lxml/lib"
+PROFILE_PATH="$BUILD_DIR/.profile.d/lxml.sh"
+BIN_DIR=$(cd "$(dirname "$0")"; pwd)
+
+mkdir -p "$(dirname "$PROFILE_PATH")"
+
+set_env() {
+  echo "export $1=$2" >> "$PROFILE_PATH"
+}
+
+mkdir -p $DIST_DIR
+
+echo "-----> lxml-buildpack: Installing lxml to $DIST_DIR"
+
+echo "       Installing sources"
+tar -C $DIST_DIR -xzf dist.tar.gz
+
+echo "       Adding \"$LIB_DIR\" to load path"
+set_env LD_LIBRARY_PATH "$LIB_DIR:\$LD_LIBRARY_PATH"
